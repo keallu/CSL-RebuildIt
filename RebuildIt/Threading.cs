@@ -9,6 +9,7 @@ namespace RebuildIt
     public class Threading : ThreadingExtensionBase
     {
         private ModConfig _modConfig;
+        private Statistics _statistics;
         private SimulationManager _simulationManager;
         private EconomyManager _economyManager;
         private BuildingManager _buildingManager;
@@ -22,7 +23,8 @@ namespace RebuildIt
         {
             try
             {
-                _modConfig = ModConfig.Instance;                
+                _modConfig = ModConfig.Instance;
+                _statistics = Statistics.Instance;
                 _simulationManager = Singleton<SimulationManager>.instance;
                 _economyManager = Singleton<EconomyManager>.instance;
                 _buildingManager = Singleton<BuildingManager>.instance;
@@ -71,7 +73,7 @@ namespace RebuildIt
                     }
                 }
 
-                if (_intervalPassed)
+                if (_modConfig.RebuildBuildings && _intervalPassed)
                 {
                     _running = true;
 
@@ -90,13 +92,23 @@ namespace RebuildIt
                                 if (IsRebuildingCostAcceptable(_building))
                                 {
                                     _buildingIds.Add(i);
+                                    _statistics.AbandonedBuildingsRebuilt++;
                                 }
                             }
                             else if ((_building.m_flags & Building.Flags.BurnedDown) != Building.Flags.None || (_building.m_flags & Building.Flags.Collapsed) != Building.Flags.None)
                             {
                                 if (!IsDisasterServiceRequired(_building) && IsRebuildingCostAcceptable(_building))
                                 {
-                                    _buildingIds.Add(i);
+                                    if ((_building.m_problems & Notification.Problem.Fire) != Notification.Problem.None)
+                                    {
+                                        _buildingIds.Add(i);
+                                        _statistics.BurnedDownBuildingsRebuilt++;
+                                    }
+                                    else if ((_building.m_problems & Notification.Problem.StructureDamaged) != Notification.Problem.None || (_building.m_problems & Notification.Problem.StructureVisited) != Notification.Problem.None || (_building.m_problems & Notification.Problem.StructureVisitedService) != Notification.Problem.None)
+                                    {
+                                        _buildingIds.Add(i);
+                                        _statistics.CollapsedBuildingsRebuilt++;
+                                    }
                                 }
                             }
                             else if ((_building.m_flags & Building.Flags.Flooded) != Building.Flags.None)
@@ -104,6 +116,7 @@ namespace RebuildIt
                                 if (IsRebuildingCostAcceptable(_building))
                                 {
                                     _buildingIds.Add(i);
+                                    _statistics.FloodedBuildingsRebuilt++;
                                 }
                             }
                         }
@@ -155,10 +168,6 @@ namespace RebuildIt
             if (!_modConfig.IgnoreSearchingForSurvivors)
             {
                 isDisasterServiceRequired = building.m_levelUpProgress != 255 ? true : false;
-            }
-            else
-            {
-                isDisasterServiceRequired = false;
             }
 
             return isDisasterServiceRequired;

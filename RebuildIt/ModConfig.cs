@@ -4,10 +4,13 @@
     public class ModConfig
     {
         public bool ConfigUpdated { get; set; }
+        public bool RebuildBuildings { get; set; } = true;
         public int Interval { get; set; } = 1;
         public int MaxBuildingsPerInterval { get; set; } = 32;
         public bool IgnoreSearchingForSurvivors { get; set; } = true;
         public bool IgnoreRebuildingCost { get; set; } = true;
+        public bool ShowCounters { get; set; } = true;
+        public bool ShowStatistics { get; set; } = true;
 
         private static ModConfig instance;
 

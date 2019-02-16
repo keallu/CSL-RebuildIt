@@ -54,11 +54,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Loading.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModInfo.cs" />
+    <Compile Include="ModUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rebuilder.cs" />
     <Compile Include="RebuildUtils.cs" />
+    <Compile Include="ResourceLoader.cs" />
+    <Compile Include="Statistics.cs" />
     <Compile Include="Threading.cs" />
+    <Compile Include="UIUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\RebuildCounter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\Rebuild.png" />
+    <EmbeddedResource Include="Icons\RebuildFocused.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
