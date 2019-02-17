@@ -2,12 +2,10 @@
 {
     public class Statistics
     {
-        public int AbandonedBuildingsRebuilt { get; set; }
         public int BurnedDownBuildingsRebuilt { get; set; }
         public int CollapsedBuildingsRebuilt { get; set; }
-        public int FloodedBuildingsRebuilt { get; set; }
 
-        public int BuildingsRebuilt => AbandonedBuildingsRebuilt + BurnedDownBuildingsRebuilt + CollapsedBuildingsRebuilt + FloodedBuildingsRebuilt;
+        public int BuildingsRebuilt => BurnedDownBuildingsRebuilt + CollapsedBuildingsRebuilt;
 
         private static Statistics instance;
 

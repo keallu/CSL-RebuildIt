@@ -87,15 +87,7 @@ namespace RebuildIt
 
                         if (!IsRICOBuilding(_building))
                         {
-                            if ((_building.m_flags & Building.Flags.Abandoned) != Building.Flags.None)
-                            {
-                                if (IsRebuildingCostAcceptable(_building))
-                                {
-                                    _buildingIds.Add(i);
-                                    _statistics.AbandonedBuildingsRebuilt++;
-                                }
-                            }
-                            else if ((_building.m_flags & Building.Flags.BurnedDown) != Building.Flags.None || (_building.m_flags & Building.Flags.Collapsed) != Building.Flags.None)
+                            if ((_building.m_flags & Building.Flags.BurnedDown) != Building.Flags.None || (_building.m_flags & Building.Flags.Collapsed) != Building.Flags.None)
                             {
                                 if (!IsDisasterServiceRequired(_building) && IsRebuildingCostAcceptable(_building))
                                 {
@@ -109,14 +101,6 @@ namespace RebuildIt
                                         _buildingIds.Add(i);
                                         _statistics.CollapsedBuildingsRebuilt++;
                                     }
-                                }
-                            }
-                            else if ((_building.m_flags & Building.Flags.Flooded) != Building.Flags.None)
-                            {
-                                if (IsRebuildingCostAcceptable(_building))
-                                {
-                                    _buildingIds.Add(i);
-                                    _statistics.FloodedBuildingsRebuilt++;
                                 }
                             }
                         }
