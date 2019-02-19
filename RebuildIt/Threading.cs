@@ -17,6 +17,7 @@ namespace RebuildIt
         private List<ushort> _buildingIds;
         private bool _running;
         private int _cachedInterval;
+        private float _timer;
         private bool _intervalPassed;
 
         public override void OnCreated(IThreading threading)
@@ -48,7 +49,7 @@ namespace RebuildIt
             }
         }
 
-        public override void OnAfterSimulationTick()
+        public override void OnUpdate(float realTimeDelta, float simulationTimeDelta)
         {
             try
             {
@@ -67,6 +68,30 @@ namespace RebuildIt
                         case 3:
                             _intervalPassed = _simulationManager.m_currentGameTime.Year != _cachedInterval ? true : false;
                             _cachedInterval = _simulationManager.m_currentGameTime.Year;
+                            break;
+                        case 4:
+                            _timer += realTimeDelta;
+                            if (_timer > 5f)
+                            {
+                                _timer = _timer - 5f;
+                                _intervalPassed = true;
+                            }
+                            break;
+                        case 5:
+                            _timer += realTimeDelta;
+                            if (_timer > 10f)
+                            {
+                                _timer = _timer - 10f;
+                                _intervalPassed = true;
+                            }
+                            break;
+                        case 6:
+                            _timer += realTimeDelta;
+                            if (_timer > 30f)
+                            {
+                                _timer = _timer - 30f;
+                                _intervalPassed = true;
+                            }
                             break;
                         default:
                             break;
@@ -118,7 +143,7 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Threading:OnAfterSimulationTick -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] Threading:OnUpdate -> Exception: " + e.Message);
                 _running = false;
             }
         }
