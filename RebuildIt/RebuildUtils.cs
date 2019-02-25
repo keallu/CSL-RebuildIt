@@ -33,55 +33,68 @@ namespace RebuildIt
                 Building building = buildingManager.m_buildings.m_buffer[buildingId];
                 BuildingInfo buildingInfo = building.Info;
 
-                int relocationCost = buildingInfo.m_buildingAI.GetRelocationCost();
-                Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Construction, relocationCost, buildingInfo.m_class);
-
-                buildingManager.RelocateBuilding(buildingId, building.m_position, building.m_angle);
-
-                if (buildingInfo.m_subBuildings != null && buildingInfo.m_subBuildings.Length != 0)
+                if (!IsRICOBuilding(building))
                 {
-                    Matrix4x4 matrix4x = default(Matrix4x4);
-                    matrix4x.SetTRS(building.m_position, Quaternion.AngleAxis(building.m_angle * 57.29578f, Vector3.down), Vector3.one);
+                    int relocationCost = buildingInfo.m_buildingAI.GetRelocationCost();
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Construction, relocationCost, buildingInfo.m_class);
 
-                    BuildingInfo subBuildingInfo;
-                    ushort subBuildingId;
-                    Vector3 position;
-                    float angle;
-                    bool fixedHeight;
+                    buildingManager.RelocateBuilding(buildingId, building.m_position, building.m_angle);
 
-                    for (int i = 0; i < buildingInfo.m_subBuildings.Length; i++)
+                    if (buildingInfo.m_subBuildings != null && buildingInfo.m_subBuildings.Length != 0)
                     {
-                        subBuildingInfo = buildingInfo.m_subBuildings[i].m_buildingInfo;
-                        position = matrix4x.MultiplyPoint(buildingInfo.m_subBuildings[i].m_position);
-                        angle = buildingInfo.m_subBuildings[i].m_angle * 0.0174532924f + building.m_angle;
-                        fixedHeight = buildingInfo.m_subBuildings[i].m_fixedHeight;
+                        Matrix4x4 matrix4x = default(Matrix4x4);
+                        matrix4x.SetTRS(building.m_position, Quaternion.AngleAxis(building.m_angle * 57.29578f, Vector3.down), Vector3.one);
 
-                        if (buildingManager.CreateBuilding(out subBuildingId, ref Singleton<SimulationManager>.instance.m_randomizer, buildingInfo, position, angle, 0, Singleton<SimulationManager>.instance.m_currentBuildIndex))
+                        BuildingInfo subBuildingInfo;
+                        Vector3 position;
+                        float angle;
+                        bool fixedHeight;
+
+                        for (int i = 0; i < buildingInfo.m_subBuildings.Length; i++)
                         {
-                            if (fixedHeight)
+                            subBuildingInfo = buildingInfo.m_subBuildings[i].m_buildingInfo;
+                            position = matrix4x.MultiplyPoint(buildingInfo.m_subBuildings[i].m_position);
+                            angle = buildingInfo.m_subBuildings[i].m_angle * 0.0174532924f + building.m_angle;
+                            fixedHeight = buildingInfo.m_subBuildings[i].m_fixedHeight;
+
+                            if (buildingManager.CreateBuilding(out ushort subBuildingId, ref Singleton<SimulationManager>.instance.m_randomizer, buildingInfo, position, angle, 0, Singleton<SimulationManager>.instance.m_currentBuildIndex))
                             {
-                                Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuildingId].m_flags |= Building.Flags.FixedHeight;
+                                if (fixedHeight)
+                                {
+                                    Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuildingId].m_flags |= Building.Flags.FixedHeight;
+                                }
+                                Singleton<SimulationManager>.instance.m_currentBuildIndex++;
                             }
-                            Singleton<SimulationManager>.instance.m_currentBuildIndex++;
-                        }
 
-                        if (buildingId != 0 && subBuildingId != 0)
-                        {
-                            buildingManager.m_buildings.m_buffer[buildingId].m_subBuilding = subBuildingId;
-                            buildingManager.m_buildings.m_buffer[subBuildingId].m_parentBuilding = buildingId;
-                            buildingManager.m_buildings.m_buffer[subBuildingId].m_flags |= Building.Flags.Untouchable;
-                            buildingId = subBuildingId;
+                            if (buildingId != 0 && subBuildingId != 0)
+                            {
+                                buildingManager.m_buildings.m_buffer[buildingId].m_subBuilding = subBuildingId;
+                                buildingManager.m_buildings.m_buffer[subBuildingId].m_parentBuilding = buildingId;
+                                buildingManager.m_buildings.m_buffer[subBuildingId].m_flags |= Building.Flags.Untouchable;
+                                buildingId = subBuildingId;
+                            }
                         }
                     }
-                }
 
-                int publicServiceIndex = ItemClass.GetPublicServiceIndex(buildingInfo.m_class.m_service);
-                if (publicServiceIndex != -1)
+                    int publicServiceIndex = ItemClass.GetPublicServiceIndex(buildingInfo.m_class.m_service);
+                    if (publicServiceIndex != -1)
+                    {
+                        Singleton<BuildingManager>.instance.m_buildingDestroyed2.Disable();
+                        Singleton<GuideManager>.instance.m_serviceNotUsed[publicServiceIndex].Disable();
+                        Singleton<GuideManager>.instance.m_serviceNeeded[publicServiceIndex].Deactivate();
+                        Singleton<CoverageManager>.instance.CoverageUpdated(buildingInfo.m_class.m_service, buildingInfo.m_class.m_subService, buildingInfo.m_class.m_level);
+                    }
+                }
+                else
                 {
-                    Singleton<BuildingManager>.instance.m_buildingDestroyed2.Disable();
-                    Singleton<GuideManager>.instance.m_serviceNotUsed[publicServiceIndex].Disable();
-                    Singleton<GuideManager>.instance.m_serviceNeeded[publicServiceIndex].Deactivate();
-                    Singleton<CoverageManager>.instance.CoverageUpdated(buildingInfo.m_class.m_service, buildingInfo.m_class.m_subService, buildingInfo.m_class.m_level);
+                    buildingManager.m_buildings.m_buffer[buildingId].m_problems = Notification.Problem.None;
+                
+                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.BurnedDown;
+                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Collapsed;
+                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Active;
+                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Completed;
+
+                    buildingManager.m_buildings.m_buffer[buildingId].m_flags |= Building.Flags.ZonesUpdated;
                 }
             }
             catch (Exception e)
@@ -90,6 +103,28 @@ namespace RebuildIt
             }
 
             yield return null;
+        }
+
+        private static bool IsRICOBuilding(Building building)
+        {
+            bool isRICO = false;
+
+            switch (building.Info.m_class.GetZone())
+            {
+                case ItemClass.Zone.ResidentialHigh:
+                case ItemClass.Zone.ResidentialLow:
+                case ItemClass.Zone.Industrial:
+                case ItemClass.Zone.CommercialHigh:
+                case ItemClass.Zone.CommercialLow:
+                case ItemClass.Zone.Office:
+                    isRICO = true;
+                    break;
+                default:
+                    isRICO = false;
+                    break;
+            }
+
+            return isRICO;
         }
     }
 }

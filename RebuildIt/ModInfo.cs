@@ -53,6 +53,20 @@ namespace RebuildIt
                 ModConfig.Instance.Save();
             });
 
+            selected = ModConfig.Instance.IncludeServiceBuildings;
+            group.AddCheckbox("Include Service Buildings", selected, sel =>
+            {
+                ModConfig.Instance.IncludeServiceBuildings = sel;
+                ModConfig.Instance.Save();
+            });
+
+            selected = ModConfig.Instance.IncludeZonedBuildings;
+            group.AddCheckbox("Include Zoned Buildings", selected, sel =>
+            {
+                ModConfig.Instance.IncludeZonedBuildings = sel;
+                ModConfig.Instance.Save();
+            });
+
             selected = ModConfig.Instance.IgnoreSearchingForSurvivors;
             group.AddCheckbox("Ignore Searching For Survivors", selected, sel =>
             {

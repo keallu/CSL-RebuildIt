@@ -7,6 +7,8 @@
         public bool RebuildBuildings { get; set; } = true;
         public int Interval { get; set; } = 1;
         public int MaxBuildingsPerInterval { get; set; } = 32;
+        public bool IncludeServiceBuildings { get; set; } = true;
+        public bool IncludeZonedBuildings { get; set; } = false;
         public bool IgnoreSearchingForSurvivors { get; set; } = true;
         public bool IgnoreRebuildingCost { get; set; } = true;
         public bool ShowCounters { get; set; } = true;

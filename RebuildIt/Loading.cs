@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace RebuildIt
 {
-
     public class Loading : LoadingExtensionBase
     {
         private LoadMode _loadMode;

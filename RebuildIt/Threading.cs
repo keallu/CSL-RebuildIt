@@ -110,7 +110,7 @@ namespace RebuildIt
                     {
                         _building = _buildingManager.m_buildings.m_buffer[i];
 
-                        if (!IsRICOBuilding(_building))
+                        if ((!IsRICOBuilding(_building) && _modConfig.IncludeServiceBuildings) || (IsRICOBuilding(_building) && _modConfig.IncludeZonedBuildings))
                         {
                             if ((_building.m_flags & Building.Flags.BurnedDown) != Building.Flags.None || (_building.m_flags & Building.Flags.Collapsed) != Building.Flags.None)
                             {
@@ -128,12 +128,12 @@ namespace RebuildIt
                                     }
                                 }
                             }
-                        }
 
-                        if (_buildingIds.Count >= _modConfig.MaxBuildingsPerInterval)
-                        {
-                            break;
-                        }
+                            if (_buildingIds.Count >= _modConfig.MaxBuildingsPerInterval)
+                            {
+                                break;
+                            }
+                        }                        
                     }
 
                     RebuildUtils.RebuildBuildings(_buildingIds);
