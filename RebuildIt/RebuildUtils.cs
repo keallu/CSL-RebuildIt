@@ -88,9 +88,11 @@ namespace RebuildIt
                 else
                 {
                     buildingManager.m_buildings.m_buffer[buildingId].m_problems = Notification.Problem.None;
-                
+
+                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Abandoned;
                     buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.BurnedDown;
                     buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Collapsed;
+                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Flooded;
                     buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Active;
                     buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Completed;
 

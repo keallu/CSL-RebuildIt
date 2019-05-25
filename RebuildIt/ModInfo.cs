@@ -67,6 +67,34 @@ namespace RebuildIt
                 ModConfig.Instance.Save();
             });
 
+            selected = ModConfig.Instance.IncludeAbandonedBuildings;
+            group.AddCheckbox("Include Abandoned Buildings", selected, sel =>
+            {
+                ModConfig.Instance.IncludeAbandonedBuildings = sel;
+                ModConfig.Instance.Save();
+            });
+
+            selected = ModConfig.Instance.IncludeBurnedDownBuildings;
+            group.AddCheckbox("Include Burned Down Buildings", selected, sel =>
+            {
+                ModConfig.Instance.IncludeBurnedDownBuildings = sel;
+                ModConfig.Instance.Save();
+            });
+
+            selected = ModConfig.Instance.IncludeCollapsedBuildings;
+            group.AddCheckbox("Include Collapsed Buildings", selected, sel =>
+            {
+                ModConfig.Instance.IncludeCollapsedBuildings = sel;
+                ModConfig.Instance.Save();
+            });
+
+            selected = ModConfig.Instance.IncludeFloodedBuildings;
+            group.AddCheckbox("Include Flooded Buildings", selected, sel =>
+            {
+                ModConfig.Instance.IncludeFloodedBuildings = sel;
+                ModConfig.Instance.Save();
+            });
+
             selected = ModConfig.Instance.IgnoreSearchingForSurvivors;
             group.AddCheckbox("Ignore Searching For Survivors", selected, sel =>
             {

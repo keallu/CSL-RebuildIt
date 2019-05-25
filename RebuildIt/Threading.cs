@@ -112,20 +112,36 @@ namespace RebuildIt
 
                         if ((!IsRICOBuilding(_building) && _modConfig.IncludeServiceBuildings) || (IsRICOBuilding(_building) && _modConfig.IncludeZonedBuildings))
                         {
-                            if ((_building.m_flags & Building.Flags.BurnedDown) != Building.Flags.None || (_building.m_flags & Building.Flags.Collapsed) != Building.Flags.None)
+                            if (_modConfig.IncludeAbandonedBuildings && (_building.m_flags & Building.Flags.Abandoned) != Building.Flags.None)
+                            {
+                                if (IsRebuildingCostAcceptable(_building))
+                                {
+                                    _buildingIds.Add(i);
+                                    _statistics.AbandonedBuildingsRebuilt++;
+                                }
+                            }
+                            else if ((_building.m_flags & Building.Flags.BurnedDown) != Building.Flags.None || (_building.m_flags & Building.Flags.Collapsed) != Building.Flags.None)
                             {
                                 if (!IsDisasterServiceRequired(_building) && IsRebuildingCostAcceptable(_building))
                                 {
-                                    if ((_building.m_problems & Notification.Problem.Fire) != Notification.Problem.None)
+                                    if (_modConfig.IncludeBurnedDownBuildings && (_building.m_problems & Notification.Problem.Fire) != Notification.Problem.None)
                                     {
                                         _buildingIds.Add(i);
                                         _statistics.BurnedDownBuildingsRebuilt++;
                                     }
-                                    else if ((_building.m_problems & Notification.Problem.StructureDamaged) != Notification.Problem.None || (_building.m_problems & Notification.Problem.StructureVisited) != Notification.Problem.None || (_building.m_problems & Notification.Problem.StructureVisitedService) != Notification.Problem.None)
+                                    else if (_modConfig.IncludeCollapsedBuildings && (_building.m_problems & Notification.Problem.StructureDamaged) != Notification.Problem.None || (_building.m_problems & Notification.Problem.StructureVisited) != Notification.Problem.None || (_building.m_problems & Notification.Problem.StructureVisitedService) != Notification.Problem.None)
                                     {
                                         _buildingIds.Add(i);
                                         _statistics.CollapsedBuildingsRebuilt++;
                                     }
+                                }
+                            }
+                            else if (_modConfig.IncludeFloodedBuildings && (_building.m_flags & Building.Flags.Flooded) != Building.Flags.None)
+                            {
+                                if (IsRebuildingCostAcceptable(_building))
+                                {
+                                    _buildingIds.Add(i);
+                                    _statistics.FloodedBuildingsRebuilt++;
                                 }
                             }
 
