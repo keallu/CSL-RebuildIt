@@ -39,6 +39,7 @@ namespace RebuildIt
                     Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Construction, relocationCost, buildingInfo.m_class);
 
                     buildingManager.RelocateBuilding(buildingId, building.m_position, building.m_angle);
+                    UpdatePublicServiceIndex(buildingInfo);
 
                     if (buildingInfo.m_subBuildings != null && buildingInfo.m_subBuildings.Length != 0)
                     {
@@ -54,10 +55,10 @@ namespace RebuildIt
                         {
                             subBuildingInfo = buildingInfo.m_subBuildings[i].m_buildingInfo;
                             position = matrix4x.MultiplyPoint(buildingInfo.m_subBuildings[i].m_position);
-                            angle = buildingInfo.m_subBuildings[i].m_angle * 0.0174532924f + building.m_angle;
+                            angle = buildingInfo.m_subBuildings[i].m_angle * ((float)Math.PI / 180f) + building.m_angle;
                             fixedHeight = buildingInfo.m_subBuildings[i].m_fixedHeight;
 
-                            if (buildingManager.CreateBuilding(out ushort subBuildingId, ref Singleton<SimulationManager>.instance.m_randomizer, buildingInfo, position, angle, 0, Singleton<SimulationManager>.instance.m_currentBuildIndex))
+                            if (buildingManager.CreateBuilding(out ushort subBuildingId, ref Singleton<SimulationManager>.instance.m_randomizer, subBuildingInfo, position, angle, 0, Singleton<SimulationManager>.instance.m_currentBuildIndex))
                             {
                                 if (fixedHeight)
                                 {
@@ -65,6 +66,8 @@ namespace RebuildIt
                                 }
                                 Singleton<SimulationManager>.instance.m_currentBuildIndex++;
                             }
+
+                            UpdatePublicServiceIndex(subBuildingInfo);
 
                             if (buildingId != 0 && subBuildingId != 0)
                             {
@@ -74,15 +77,6 @@ namespace RebuildIt
                                 buildingId = subBuildingId;
                             }
                         }
-                    }
-
-                    int publicServiceIndex = ItemClass.GetPublicServiceIndex(buildingInfo.m_class.m_service);
-                    if (publicServiceIndex != -1)
-                    {
-                        Singleton<BuildingManager>.instance.m_buildingDestroyed2.Disable();
-                        Singleton<GuideManager>.instance.m_serviceNotUsed[publicServiceIndex].Disable();
-                        Singleton<GuideManager>.instance.m_serviceNeeded[publicServiceIndex].Deactivate();
-                        Singleton<CoverageManager>.instance.CoverageUpdated(buildingInfo.m_class.m_service, buildingInfo.m_class.m_subService, buildingInfo.m_class.m_level);
                     }
                 }
                 else
@@ -105,6 +99,18 @@ namespace RebuildIt
             }
 
             yield return null;
+        }
+
+        private static void UpdatePublicServiceIndex(BuildingInfo buildingInfo)
+        {
+            int publicServiceIndex = ItemClass.GetPublicServiceIndex(buildingInfo.m_class.m_service);
+            if (publicServiceIndex != -1)
+            {
+                Singleton<BuildingManager>.instance.m_buildingDestroyed2.Disable();
+                Singleton<GuideManager>.instance.m_serviceNotUsed[publicServiceIndex].Disable();
+                Singleton<GuideManager>.instance.m_serviceNeeded[publicServiceIndex].Deactivate();
+                Singleton<CoverageManager>.instance.CoverageUpdated(buildingInfo.m_class.m_service, buildingInfo.m_class.m_subService, buildingInfo.m_class.m_level);
+            }
         }
 
         private static bool IsRICOBuilding(Building building)
