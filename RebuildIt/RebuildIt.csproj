@@ -59,7 +59,7 @@
     <Compile Include="ModInfo.cs" />
     <Compile Include="ModUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rebuilder.cs" />
+    <Compile Include="ModManager.cs" />
     <Compile Include="RebuildUtils.cs" />
     <Compile Include="ResourceLoader.cs" />
     <Compile Include="Statistics.cs" />

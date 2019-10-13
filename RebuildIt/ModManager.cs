@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RebuildIt
 {
-    class Rebuilder : MonoBehaviour
+    class ModManager : MonoBehaviour
     {
         private bool _initialized;
 
@@ -16,7 +16,7 @@ namespace RebuildIt
         private UILabel _rebuildCounter;
         private UIButton _rebuildStatistics;
 
-        private void Awake()
+        public void Start()
         {
             try
             {
@@ -41,35 +41,11 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:Awake -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:Start -> Exception: " + e.Message);
             }
         }
 
-        private void OnEnable()
-        {
-            try
-            {
-
-            }
-            catch (Exception e)
-            {
-                Debug.Log("[Rebuild It!] Rebuilder:OnEnable -> Exception: " + e.Message);
-            }
-        }
-
-        private void Start()
-        {
-            try
-            {
-
-            }
-            catch (Exception e)
-            {
-                Debug.Log("[Rebuild It!] Rebuilder:Start -> Exception: " + e.Message);
-            }
-        }
-
-        private void Update()
+        public void Update()
         {
             try
             {
@@ -102,31 +78,30 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:Update -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:Update -> Exception: " + e.Message);
             }
         }
 
-        private void OnDisable()
+        public void OnDestroy()
         {
             try
             {
-
+                if (_rebuildStatistics != null)
+                {
+                    Destroy(_rebuildStatistics);
+                }
+                if (_rebuildCounter != null)
+                {
+                    Destroy(_rebuildCounter);
+                }
+                if (_rebuildButton != null)
+                {
+                    Destroy(_rebuildButton);
+                }
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:OnDisable -> Exception: " + e.Message);
-            }
-        }
-
-        private void OnDestroy()
-        {
-            try
-            {
-
-            }
-            catch (Exception e)
-            {
-                Debug.Log("[Rebuild It!] Rebuilder:OnDestroy -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:OnDestroy -> Exception: " + e.Message);
             }
         }
 
@@ -162,7 +137,7 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:LoadResources -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:LoadResources -> Exception: " + e.Message);
                 return null;
             }
         }
@@ -188,7 +163,7 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:CreateUI -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:CreateUI -> Exception: " + e.Message);
             }
         }
 
@@ -217,7 +192,7 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:UpdateUI -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:UpdateUI -> Exception: " + e.Message);
             }
         }
 
@@ -229,7 +204,7 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:UpdateAllButtonCheckBoxes -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:UpdateAllButtonCheckBoxes -> Exception: " + e.Message);
             }
         }
 
@@ -256,7 +231,7 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:UpdateButtonCheckBox -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:UpdateButtonCheckBox -> Exception: " + e.Message);
             }
         }
 
@@ -268,7 +243,7 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:UpdateCounters -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:UpdateCounters -> Exception: " + e.Message);
             }
         }
 
@@ -280,7 +255,7 @@ namespace RebuildIt
             }
             catch (Exception e)
             {
-                Debug.Log("[Rebuild It!] Rebuilder:UpdateStatistics -> Exception: " + e.Message);
+                Debug.Log("[Rebuild It!] ModManager:UpdateStatistics -> Exception: " + e.Message);
             }
         }
     }

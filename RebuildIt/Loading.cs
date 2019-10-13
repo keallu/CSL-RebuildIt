@@ -1,5 +1,4 @@
-﻿using ColossalFramework.UI;
-using ICities;
+﻿using ICities;
 using System;
 using UnityEngine;
 
@@ -8,7 +7,7 @@ namespace RebuildIt
     public class Loading : LoadingExtensionBase
     {
         private LoadMode _loadMode;
-        private GameObject _gameObject;
+        private GameObject _modManagerGameObject;
 
         public override void OnLevelLoaded(LoadMode mode)
         {
@@ -16,18 +15,13 @@ namespace RebuildIt
             {
                 _loadMode = mode;
 
-                if (_loadMode != LoadMode.LoadGame && _loadMode != LoadMode.NewGame && _loadMode != LoadMode.NewGameFromScenario)
+                if (_loadMode != LoadMode.LoadGame && _loadMode != LoadMode.LoadScenario && _loadMode != LoadMode.NewGame && _loadMode != LoadMode.NewGameFromScenario)
                 {
                     return;
                 }
 
-                UIView objectOfType = UnityEngine.Object.FindObjectOfType<UIView>();
-                if (objectOfType != null)
-                {
-                    _gameObject = new GameObject("RebuildItRebuilder");
-                    _gameObject.transform.parent = objectOfType.transform;
-                    _gameObject.AddComponent<Rebuilder>();
-                }
+                _modManagerGameObject = new GameObject("MonitorItModManager");
+                _modManagerGameObject.AddComponent<ModManager>();
             }
             catch (Exception e)
             {
@@ -39,17 +33,15 @@ namespace RebuildIt
         {
             try
             {
-                if (_loadMode != LoadMode.LoadGame && _loadMode != LoadMode.NewGame && _loadMode != LoadMode.NewGameFromScenario)
+                if (_loadMode != LoadMode.LoadGame && _loadMode != LoadMode.LoadScenario && _loadMode != LoadMode.NewGame && _loadMode != LoadMode.NewGameFromScenario)
                 {
                     return;
                 }
 
-                if (_gameObject == null)
+                if (_modManagerGameObject != null)
                 {
-                    return;
+                    UnityEngine.Object.Destroy(_modManagerGameObject);
                 }
-
-                UnityEngine.Object.Destroy(_gameObject);
             }
             catch (Exception e)
             {

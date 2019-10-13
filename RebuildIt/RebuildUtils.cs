@@ -81,16 +81,24 @@ namespace RebuildIt
                 }
                 else
                 {
-                    buildingManager.m_buildings.m_buffer[buildingId].m_problems = Notification.Problem.None;
+                    Notification.Problem problems = buildingManager.m_buildings.m_buffer[buildingId].m_problems;
+                    Building.Flags flags = buildingManager.m_buildings.m_buffer[buildingId].m_flags;
 
+                    buildingManager.m_buildings.m_buffer[buildingId].m_problems = Notification.Problem.None;
                     buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Abandoned;
                     buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.BurnedDown;
                     buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Collapsed;
                     buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Flooded;
-                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Active;
-                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Completed;
 
-                    buildingManager.m_buildings.m_buffer[buildingId].m_flags |= Building.Flags.ZonesUpdated;
+                    buildingInfo.m_buildingAI.BuildingUpgraded(buildingId, ref building);
+                    
+                    Building.Flags flags2 = building.m_flags;
+                    Notification.Problem problems2 = building.m_problems;
+
+                    buildingManager.UpdateNotifications(buildingId, problems, problems2);
+                    buildingManager.UpdateBuildingRenderer(buildingId, updateGroup: true);
+                    
+                    buildingManager.UpdateFlags(buildingId, flags2 ^ flags);
                 }
             }
             catch (Exception e)
