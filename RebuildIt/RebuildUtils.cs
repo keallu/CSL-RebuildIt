@@ -29,6 +29,7 @@ namespace RebuildIt
         {
             try
             {
+                SimulationManager simulationManager = Singleton<SimulationManager>.instance;
                 BuildingManager buildingManager = Singleton<BuildingManager>.instance;
                 Building building = buildingManager.m_buildings.m_buffer[buildingId];
                 BuildingInfo buildingInfo = building.Info;
@@ -58,13 +59,13 @@ namespace RebuildIt
                             angle = buildingInfo.m_subBuildings[i].m_angle * ((float)Math.PI / 180f) + building.m_angle;
                             fixedHeight = buildingInfo.m_subBuildings[i].m_fixedHeight;
 
-                            if (buildingManager.CreateBuilding(out ushort subBuildingId, ref Singleton<SimulationManager>.instance.m_randomizer, subBuildingInfo, position, angle, 0, Singleton<SimulationManager>.instance.m_currentBuildIndex))
+                            if (buildingManager.CreateBuilding(out ushort subBuildingId, ref simulationManager.m_randomizer, subBuildingInfo, position, angle, 0, simulationManager.m_currentBuildIndex))
                             {
                                 if (fixedHeight)
                                 {
-                                    Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuildingId].m_flags |= Building.Flags.FixedHeight;
+                                    buildingManager.m_buildings.m_buffer[subBuildingId].m_flags |= Building.Flags.FixedHeight;
                                 }
-                                Singleton<SimulationManager>.instance.m_currentBuildIndex++;
+                                simulationManager.m_currentBuildIndex++;
                             }
 
                             UpdatePublicServiceIndex(subBuildingInfo);
@@ -81,24 +82,32 @@ namespace RebuildIt
                 }
                 else
                 {
-                    Notification.Problem problems = buildingManager.m_buildings.m_buffer[buildingId].m_problems;
-                    Building.Flags flags = buildingManager.m_buildings.m_buffer[buildingId].m_flags;
+                    buildingManager.ReleaseBuilding(buildingId);
 
-                    buildingManager.m_buildings.m_buffer[buildingId].m_problems = Notification.Problem.None;
-                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Abandoned;
-                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.BurnedDown;
-                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Collapsed;
-                    buildingManager.m_buildings.m_buffer[buildingId].m_flags &= ~Building.Flags.Flooded;
+                    if (buildingManager.CreateBuilding(out var _, ref simulationManager.m_randomizer, buildingInfo, building.m_position, building.m_angle, building.Width, simulationManager.m_currentBuildIndex))
+                    {
+                        ZoneManager zoneManager = Singleton<ZoneManager>.instance;
 
-                    buildingInfo.m_buildingAI.BuildingUpgraded(buildingId, ref building);
-                    
-                    Building.Flags flags2 = building.m_flags;
-                    Notification.Problem problems2 = building.m_problems;
+                        simulationManager.m_currentBuildIndex++;
 
-                    buildingManager.UpdateNotifications(buildingId, problems, problems2);
-                    buildingManager.UpdateBuildingRenderer(buildingId, updateGroup: true);
-                    
-                    buildingManager.UpdateFlags(buildingId, flags2 ^ flags);
+                        switch (buildingInfo.m_class.m_service)
+                        {
+                            case ItemClass.Service.Residential:
+                                zoneManager.m_actualResidentialDemand = Mathf.Max(0, zoneManager.m_actualResidentialDemand - 5);
+                                break;
+                            case ItemClass.Service.Commercial:
+                                zoneManager.m_actualCommercialDemand = Mathf.Max(0, zoneManager.m_actualCommercialDemand - 5);
+                                break;
+                            case ItemClass.Service.Industrial:
+                                zoneManager.m_actualWorkplaceDemand = Mathf.Max(0, zoneManager.m_actualWorkplaceDemand - 5);
+                                break;
+                            case ItemClass.Service.Office:
+                                zoneManager.m_actualWorkplaceDemand = Mathf.Max(0, zoneManager.m_actualWorkplaceDemand - 5);
+                                break;
+                        }
+                    }
+
+                    simulationManager.m_currentBuildIndex++;
                 }
             }
             catch (Exception e)
