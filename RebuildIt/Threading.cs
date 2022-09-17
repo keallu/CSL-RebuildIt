@@ -110,6 +110,8 @@ namespace RebuildIt
                     {
                         _building = _buildingManager.m_buildings.m_buffer[i];
 
+                        if (_building.Info == null) continue;
+
                         if ((!IsRICOBuilding(_building) && _modConfig.IncludeServiceBuildings) || (IsRICOBuilding(_building) && _modConfig.IncludeZonedBuildings))
                         {
                             if (_modConfig.IncludeAbandonedBuildings && (_building.m_flags & Building.Flags.Abandoned) != Building.Flags.None)
