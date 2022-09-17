@@ -124,12 +124,12 @@ namespace RebuildIt
                             {
                                 if (!IsDisasterServiceRequired(_building) && IsRebuildingCostAcceptable(_building))
                                 {
-                                    if (_modConfig.IncludeBurnedDownBuildings && (_building.m_problems & Notification.Problem.Fire) != Notification.Problem.None)
+                                    if (_modConfig.IncludeBurnedDownBuildings && (_building.m_problems & Notification.Problem1.Fire) != Notification.Problem1.None)
                                     {
                                         _buildingIds.Add(i);
                                         _statistics.BurnedDownBuildingsRebuilt++;
                                     }
-                                    else if (_modConfig.IncludeCollapsedBuildings && (_building.m_problems & Notification.Problem.StructureDamaged) != Notification.Problem.None || (_building.m_problems & Notification.Problem.StructureVisited) != Notification.Problem.None || (_building.m_problems & Notification.Problem.StructureVisitedService) != Notification.Problem.None)
+                                    else if (_modConfig.IncludeCollapsedBuildings && (_building.m_problems & Notification.Problem1.StructureDamaged) != Notification.Problem1.None || (_building.m_problems & Notification.Problem1.StructureVisited) != Notification.Problem1.None || (_building.m_problems & Notification.Problem1.StructureVisitedService) != Notification.Problem1.None)
                                     {
                                         _buildingIds.Add(i);
                                         _statistics.CollapsedBuildingsRebuilt++;
